@@ -2,9 +2,9 @@
 * Fixed title bug
 * Added HTTPS support
 
-In order to enable HTTPS Support, simply switch the boolean https in the sample config file to true and provide the path to you certificat and key.
+In order to enable HTTPS Support, simply switch the boolean **https** in the sample config file to true and provide the path to you certificat and key.
 
-If running under Apache, I suggest you run Jingo HTTPS server on port 443 and comment any mention of port 443 in your Apache config files.
+If running under Apache, I suggest you run Jingo HTTPS server on port **443** and comment any mention of port **443** in your Apache config files.
 
 [![NPM](https://nodei.co/npm/jingo.png?compact=true)](https://npmjs.org/package/jingo)
 
