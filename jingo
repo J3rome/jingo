@@ -83,21 +83,22 @@ function start() {
   var app = require("./lib/app").initialize(config);
 
   var listenAddr = process.env.NW_ADDR || "";
-  if (config.get("server").localOnly) {
+  var server =config.get("server");
+  if (server.localOnly) {
     listenAddr = "localhost";
   }
 
-  http.createServer(app).listen(config.get("server").port, listenAddr, function() {
-    console.log((new Date()) + " - Jingo%sHTTP server v%s listening on port %s", config.get("server").localOnly ? " (local) " : " ", program.version(), config.get("server").port);
+  http.createServer(app).listen(server.port, listenAddr, function() {
+    console.log((new Date()) + " - Jingo%sHTTP server v%s listening on port %s", server.localOnly ? " (local) " : " ", program.version(), server.port);
   });
   
-  if(config.get("server").https){
+  if(server.https){
     var error = false;
   
     try{
         var httpsOptions = {
-            key : fs.readFileSync(config.get("server").httpsKeyFilePath),
-            cert: fs.readFileSync(config.get("server").httpsCertFilePath)
+            key : fs.readFileSync(server.httpsKeyFilePath),
+            cert: fs.readFileSync(server.httpsCertFilePath)
         };
     }catch(err){
         error = true;
@@ -106,8 +107,8 @@ function start() {
     }
     
     if(!error){
-        https.createServer(httpsOptions, app).listen(config.get("server").httpsPort, function() {
-            console.log((new Date()) + " - Jingo%sHTTPS server v%s listening on port %s", config.get("server").localOnly ? " (local) " : " ", program.version(), config.get("server").httpsPort);
+        https.createServer(httpsOptions, app).listen(server.httpsPort, function() {
+            console.log((new Date()) + " - Jingo%sHTTPS server v%s listening on port %s", server.localOnly ? " (local) " : " ", program.version(), server.httpsPort);
         });
     }
   
