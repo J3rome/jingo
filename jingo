@@ -109,11 +109,19 @@ function start() {
       }
   }
 
-  if(!(server.https && server.disableHttp)){
-      http.createServer(app).listen(server.port, listenAddr, function() {
-          console.log((new Date()) + " - Jingo%sHTTP server v%s listening on port %s", server.localOnly ? " (local) " : " ", program.version(), server.port);
-      });
+
+  var httpServerHandler = app;                      // By default, the httpServerHandler is express App
+
+  if(!(server.https && server.disableHttp)) {       // If option to disable HTTP is True, change the httpServerHandler
+      httpServerHandler = function(req,res) {
+          res.statusCode = 501;     // HTTP Not Implemented
+          res.json({"Error":"HTTP protocol is not supported. Must use HTTPS to connect."});
+      };
   }
+
+  http.createServer(httpServerHandler).listen(server.port, listenAddr, function() {
+      console.log((new Date()) + " - Jingo%sHTTP server v%s listening on port %s", server.localOnly ? " (local) " : " ", program.version(), server.port);
+  });
   
   if (config.get("application").pushInterval && refspec.length > 0) {
     setInterval(function() {
