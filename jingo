@@ -91,7 +91,7 @@ function start() {
     console.log((new Date()) + " - Jingo%sHTTP server v%s listening on port %s", config.get("server").localOnly ? " (local) " : " ", program.version(), config.get("server").port);
   });
   
-  if(config.get("https"){
+  if(config.get("https")){
     var error = false;
   
     try{
