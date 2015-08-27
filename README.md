@@ -1,4 +1,4 @@
-** Changes
+**Changes**
 * Fixed title bug
 * Added HTTPS support (Will add doc in readme later)
 
