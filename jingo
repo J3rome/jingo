@@ -91,13 +91,13 @@ function start() {
     console.log((new Date()) + " - Jingo%sHTTP server v%s listening on port %s", config.get("server").localOnly ? " (local) " : " ", program.version(), config.get("server").port);
   });
   
-  if(config.get("https")){
+  if(config.get("server").https){
     var error = false;
   
     try{
         var httpsOptions = {
-            key : fs.readFileSync(config.get("httpsKeyFilePath")),
-            cert: fs.readFileSync(config.get("httpsCertFilePath"))
+            key : fs.readFileSync(config.get("server").httpsKeyFilePath),
+            cert: fs.readFileSync(config.get("server").httpsCertFilePath)
         };
     }catch(err){
         error = true;
@@ -106,8 +106,8 @@ function start() {
     }
     
     if(!error){
-        https.createServer(httpsOptions, app).listen(httpsPort, function() {
-            console.log((new Date()) + " - Jingo%sHTTPS server v%s listening on port %s", config.get("server").localOnly ? " (local) " : " ", program.version(), config.get("server").port);
+        https.createServer(httpsOptions, app).listen(config.get("server").httpsPort, function() {
+            console.log((new Date()) + " - Jingo%sHTTPS server v%s listening on port %s", config.get("server").localOnly ? " (local) " : " ", program.version(), config.get("server").httpsPort);
         });
     }
   
