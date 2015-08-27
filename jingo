@@ -109,10 +109,10 @@ function start() {
       }
   }
 
+  var httpServerHandler,
+      httpServerDisabled = !(server.https && server.disableHttp);     // Verify settings to know if should disable HTTP server
 
-  var httpServerHandler = app;                      // By default, the httpServerHandler is express App
-
-  if(!(server.https && server.disableHttp)) {       // If option to disable HTTP is True, change the httpServerHandler
+  if(httpServerDisabled) {       // If option to disable HTTP is True, change the httpServerHandler
       httpServerHandler = function(req,res) {
           res.statusCode = 501;     // HTTP Not Implemented
           res.json({"Error":"HTTP protocol is not supported. Must use HTTPS to connect."});
@@ -120,10 +120,10 @@ function start() {
   }
 
   http.createServer(httpServerHandler).listen(server.port, listenAddr, function() {
-      if(httpServerHandler == app) {
-          console.log((new Date()) + " - Jingo%sHTTP server v%s listening on port %s", server.localOnly ? " (local) " : " ", program.version(), server.port);
-      }else{
+      if(httpServerDisabled) {
           console.log((new Date()) + " - Jingo%sHTTP server v%s restricted access mode. Listening on port %s", server.localOnly ? " (local) " : " ", program.version(), server.port);
+      }else{
+          console.log((new Date()) + " - Jingo%sHTTP server v%s listening on port %s", server.localOnly ? " (local) " : " ", program.version(), server.port);
       }
   });
   
