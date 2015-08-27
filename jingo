@@ -14,12 +14,7 @@ var program           = require('commander'),
     fs                = require('fs'),
     os                = require('os'),
     semver            = require('semver'),
-    /******************** CHANGE TO ENABLE HTTPS ********************/
-    httpsSupport      = false,
-    https             = require('https'),
-    httpsPort         = 443,
-    httpsKeyFilePath  = 'https/key.pem',
-    httpsCertFilePath = 'https';
+    https             = require('https');
 
 global.Git = require('./lib/gitmech');
 
@@ -96,16 +91,25 @@ function start() {
     console.log((new Date()) + " - Jingo%sHTTP server v%s listening on port %s", config.get("server").localOnly ? " (local) " : " ", program.version(), config.get("server").port);
   });
   
-  if(httpsSupport){
+  if(config.get("https"){
+    var error = false;
   
-    var httpsOptions = {
-        key : fs.readFileSync(httpsKeyFilePath),
-        cert: fs.readFileSync(httpsCertFilePath)
-    };
+    try{
+        var httpsOptions = {
+            key : fs.readFileSync(config.get("httpsKeyFilePath")),
+            cert: fs.readFileSync(config.get("httpsCertFilePath"))
+        };
+    }catch(err){
+        error = true;
+        console.log("An error occured while reading the HTTPS key or certificate provided.");
+        console.log("HTTPS Server won't start");
+    }
     
-    https.createServer(httpsOptions, app).listen(httpsPort, function() {
-        console.log((new Date()) + " - Jingo%sHTTPS server v%s listening on port %s", config.get("server").localOnly ? " (local) " : " ", program.version(), config.get("server").port);
-    });
+    if(!error){
+        https.createServer(httpsOptions, app).listen(httpsPort, function() {
+            console.log((new Date()) + " - Jingo%sHTTPS server v%s listening on port %s", config.get("server").localOnly ? " (local) " : " ", program.version(), config.get("server").port);
+        });
+    }
   
   }
 
