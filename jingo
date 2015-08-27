@@ -88,32 +88,33 @@ function start() {
     listenAddr = "localhost";
   }
 
-  http.createServer(app).listen(server.port, listenAddr, function() {
-    console.log((new Date()) + " - Jingo%sHTTP server v%s listening on port %s", server.localOnly ? " (local) " : " ", program.version(), server.port);
-  });
-  
   if(server.https){
-    var error = false;
-  
-    try{
-        var httpsOptions = {
-            key : fs.readFileSync(server.httpsKeyFilePath),
-            cert: fs.readFileSync(server.httpsCertFilePath)
-        };
-    }catch(err){
-        error = true;
-        console.log("An error occured while reading the HTTPS key or certificate provided.");
-        console.log("HTTPS Server won't start");
-    }
-    
-    if(!error){
-        https.createServer(httpsOptions, app).listen(server.httpsPort, function() {
-            console.log((new Date()) + " - Jingo%sHTTPS server v%s listening on port %s", server.localOnly ? " (local) " : " ", program.version(), server.httpsPort);
-        });
-    }
-  
+      var httpsError = false;
+
+      try{
+          var httpsOptions = {
+              key : fs.readFileSync(server.httpsKeyFilePath),
+              cert: fs.readFileSync(server.httpsCertFilePath)
+          };
+      }catch(err){
+          httpsError = true;
+          console.log("An error occured while reading the HTTPS key or certificate provided.");
+          console.log("HTTPS Server won't start");
+      }
+
+      if(!httpsError){
+          https.createServer(httpsOptions, app).listen(server.httpsPort, function() {
+              console.log((new Date()) + " - Jingo%sHTTPS server v%s listening on port %s", server.localOnly ? " (local) " : " ", program.version(), server.httpsPort);
+          });
+      }
   }
 
+  if(!(server.https && server.disableHttp)){
+      http.createServer(app).listen(server.port, listenAddr, function() {
+          console.log((new Date()) + " - Jingo%sHTTP server v%s listening on port %s", server.localOnly ? " (local) " : " ", program.version(), server.port);
+      });
+  }
+  
   if (config.get("application").pushInterval && refspec.length > 0) {
     setInterval(function() {
       Git.pull(function(err) {
