@@ -120,7 +120,11 @@ function start() {
   }
 
   http.createServer(httpServerHandler).listen(server.port, listenAddr, function() {
-      console.log((new Date()) + " - Jingo%sHTTP server v%s listening on port %s", server.localOnly ? " (local) " : " ", program.version(), server.port);
+      if(httpServerHandler == app) {
+          console.log((new Date()) + " - Jingo%sHTTP server v%s listening on port %s", server.localOnly ? " (local) " : " ", program.version(), server.port);
+      }else{
+          console.log((new Date()) + " - Jingo%sHTTP server v%s restricted access mode. Listening on port %s", server.localOnly ? " (local) " : " ", program.version(), server.port);
+      }
   });
   
   if (config.get("application").pushInterval && refspec.length > 0) {
