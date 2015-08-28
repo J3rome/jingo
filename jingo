@@ -23,7 +23,6 @@ program.version('1.3.0')
   .option('-#, --hash-string <string>', 'Create an hash for a string')
   .option('-l, --local', 'Listen on localhost only')
   .option('-s, --sample-config', 'Dumps a config file template and exits')
-  .option('-h, --https-config', 'Provide the config file to enable HTTPS support')
   .parse(process.argv);
 
 if (program.sampleConfig) {
@@ -63,8 +62,10 @@ Git.setup(config.get("application").git,
       process.exit(-1);
     }
 
-    if (os.platform() == "darwin" && !config.get("application").skipGitCheck &&
-      config.get("pages").title.fromFilename && !semver.satisfies(version, ">=1.8.5")) {
+  if (os.platform() == "darwin" &&
+      !config.get("application").skipGitCheck &&
+      config.get("pages").title.fromFilename && 
+      !semver.satisfies(version, ">=1.8.5")) {
       console.log("Your current setup uses the filename of the wiki page as the page title.");
       console.log("Unfortunately this version of git (" + version + ".x) on OSX doesn't handle");
       console.log("very well non ASCII characters used in filenames, therefore I rather not start.");
@@ -111,7 +112,7 @@ function start() {
 
   // Start the HTTP server
   var httpServerHandler,
-    httpServerDisabled = server.https && server.forceHttps && !httpsError;   // Disable http server if specified in settings (Fallback in case of HTTPS server error)
+      httpServerDisabled = server.https && server.forceHttps && !httpsError;   // Disable http server if specified in settings (Fallback in case of HTTPS server error)
 
   if (httpServerDisabled) {     // If force HTTPS, change the httpServerHandler to redirect all traffic to HTTPS
     httpServerHandler = function (req, res) {
