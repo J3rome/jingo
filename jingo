@@ -87,6 +87,7 @@ function start() {
   }
 
   if (server.https) {
+    // Start the HTTPS server
     var httpsError = false;
 
     try {
@@ -108,13 +109,13 @@ function start() {
     }
   }
 
+  // Start the HTTP server
   var httpServerHandler,
     httpServerDisabled = server.https && server.forceHttps && !httpsError;   // Disable http server if specified in settings (Fallback in case of HTTPS server error)
 
-  if (httpServerDisabled) {     // If option to disable HTTP is True, change the httpServerHandler
+  if (httpServerDisabled) {     // If force HTTPS, change the httpServerHandler to redirect all traffic to HTTPS
     httpServerHandler = function (req, res) {
-      // Redirect the user to the Https server
-      res.writeHead(301, {"Location": "https://" + req.headers['host'] + req.url});
+      res.writeHead(301, {"Location": "https://" + req.headers['host'] + req.url});   // Redirect the user to the Https server
       res.end();
     };
   } else {
@@ -122,11 +123,12 @@ function start() {
   }
 
   http.createServer(httpServerHandler).listen(server.port, listenAddr, function () {
-    if (httpServerDisabled) {
-      console.log((new Date()) + " - Jingo%sHTTP redirection server v%s Listening on port %s (Will redirect to HTTPS)", server.localOnly ? " (local) " : " ", program.version(), server.port);
-    } else {
-      console.log((new Date()) + " - Jingo%sHTTP server v%s listening on port %s", server.localOnly ? " (local) " : " ", program.version(), server.port);
+    // Show different message if HTTP protocol is authorized or not
+    var status = " - Jingo%sHTTP server v%s listening on port %s";
+    if(httpServerDisabled) {
+      status = status.replace("server", "redirection server") + " (Will redirect to HTTPS)";
     }
+    console.log((new Date()) + status, server.localOnly ? " (local) " : " ", program.version(), server.port);
   });
 
   if (config.get("application").pushInterval && refspec.length > 0) {
