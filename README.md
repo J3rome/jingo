@@ -8,6 +8,10 @@ If you want to force use of Https and disable HTTP support, simply change the va
 
 If running under Apache, I suggest you run Jingo HTTPS server on port **443** and comment any mention of port **443** in your Apache config files.
 
+** Important **
+HTTPS Should not break anything but I didn't test the github and google authentication since i use local auth only
+
+
 [![NPM](https://nodei.co/npm/jingo.png?compact=true)](https://npmjs.org/package/jingo)
 
 [ ![Codeship Status for claudioc/jingo](https://www.codeship.io/projects/4c413870-353e-0132-115c-220292a78f73/status)](https://www.codeship.io/projects/40997)
