@@ -120,7 +120,7 @@ function start() {
       };
   }
 
-  http.createServer(httpServerHandler).listen(server.port, listenAddr, function() {
+  http.createServer(httpServerHandler ? httpServerHandler : app).listen(server.port, listenAddr, function() {
       if(httpServerDisabled) {
           console.log((new Date()) + " - Jingo%sHTTP server v%s restricted access mode. Listening on port %s", server.localOnly ? " (local) " : " ", program.version(), server.port);
       }else{
