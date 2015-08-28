@@ -99,7 +99,8 @@ function start() {
       }catch(err){
           httpsError = true;
           console.log("An error occured while reading the HTTPS key or certificate provided.");
-          console.log("HTTPS Server won't start");
+          console.log("HTTPS Server won't start.");
+	  console.log("Fallback to HTTP server.");
       }
 
       if(!httpsError){
@@ -110,17 +111,19 @@ function start() {
   }
 
   var httpServerHandler,
-      httpServerDisabled = !(server.https && server.forceHttps);     // Verify settings to know if should disable HTTP server
+      httpServerDisabled = server.https && server.forceHttps && !httpsError;     // Disable http server if specified in settings (Fallback in case of HTTPS server error)
 
   if(httpServerDisabled) {       // If option to disable HTTP is True, change the httpServerHandler
       httpServerHandler = function(req,res) {
           res.statusCode = 501;     // HTTP Not Implemented
-          res.send("test");
-          //res.json({"Error":"HTTP protocol is not supported. Must use HTTPS to connect."});
+          res.write(JSON.stringify({"Error":"HTTP protocol is not supported. Must use HTTPS to connect."}));
+	  res.end();
       };
+  }else{
+      httpServerHandler = app;
   }
 
-  http.createServer(httpServerHandler ? httpServerHandler : app).listen(server.port, listenAddr, function() {
+  http.createServer(httpServerHandler).listen(server.port, listenAddr, function() {
       if(httpServerDisabled) {
           console.log((new Date()) + " - Jingo%sHTTP server v%s restricted access mode. Listening on port %s", server.localOnly ? " (local) " : " ", program.version(), server.port);
       }else{
